@@ -3,9 +3,9 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { AppModule } from '../src/app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
-import * as express from 'express';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import express from 'express';
 
 const server = express();
 
