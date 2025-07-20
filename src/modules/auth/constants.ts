@@ -1,4 +1,4 @@
 export const jwtConstants = {
-  secret: 'T1 camp JS 2025',
+  secret: process.env.JWT_SECRET || 'T1 camp JS 2025',
   cookieName: 'usersApi',
 };

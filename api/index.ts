@@ -1,17 +1,27 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { AppModule } from '../src/app.module';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
+import * as express from 'express';
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, {
-    cors: {
-      origin: process.env.FRONTEND_URL || true, // В продакшене укажите конкретный домен
-      credentials: true,
+const server = express();
+
+const createNestServer = async (
+  expressInstance: express.Application,
+): Promise<express.Application> => {
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressInstance),
+    {
+      cors: {
+        origin: process.env.FRONTEND_URL || true, // В продакшене укажите конкретный домен
+        credentials: true,
+      },
     },
-  });
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Users API')
@@ -42,7 +52,12 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 4000);
-}
+  await app.init();
+  return app.getHttpAdapter().getInstance() as express.Application;
+};
 
-bootstrap();
+createNestServer(server)
+  .then(() => console.log('Nest Ready'))
+  .catch((err) => console.error('Nest broken', err));
+
+export default server;
